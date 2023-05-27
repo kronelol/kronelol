@@ -10,39 +10,6 @@ real = 2
 LocalPlayer = Players.LocalPlayer
 Character = LocalPlayer.Character
 
--- Functions
-local function newCharacter(Character)
-    local rootPart = Character:WaitForChild("HumanoidRootPart")
-    
-    -- Clear PlayerGuis
-    for i, object in pairs(LocalPlayer.PlayerGui:GetChildren()) do
-        object:Destroy()
-    end
-end
- 
--- Use less of internet resources
---networkClient:SetOutgoingKBPSLimit(1)
- 
-repeat wait() until LocalPlayer.Character ~= nil and game:IsLoaded()
-wait(5) -- Waiting 5 more seconds because some anti-exploit scripts love to check everything about the client when it joins
- 
--- Clear workspace
-for i, object in pairs(workspace:GetChildren()) do
-    if object.Name ~= "Terrain" then
-        if not object:IsA("Camera") and not Players:GetPlayerFromCharacter(object) and object.Name ~= "Terrain" then
-            object:Destroy()
-        end
-    end
-end
-workspace.Terrain:Clear()
-
--- Clear Lighting
-for i, object in pairs(game.Lighting:GetChildren()) do
-    object:Destroy()
-end
-
-newCharacter(LocalPlayer.Character)
-LocalPlayer.CharacterAdded:Connect(newCharacter)
 
 
 
@@ -150,7 +117,6 @@ end
 
 
 local function SkidFling(TargetPlayer)
-    local Character = LocalPlayer.Character
     local Humanoid = Character:FindFirstChildOfClass("Humanoid")
     local RootPart = Humanoid.RootPart
     
@@ -292,3 +258,35 @@ end))
 
 
 if numb == 700 then hop() end
+
+-- Functions
+local function newCharacter(Character)
+    local rootPart = Character:WaitForChild("HumanoidRootPart")
+    
+    -- Clear PlayerGuis
+
+ 
+-- Use less of internet resources
+--networkClient:SetOutgoingKBPSLimit(1)
+ 
+repeat wait() until LocalPlayer.Character ~= nil and game:IsLoaded()
+wait(5) -- Waiting 5 more seconds because some anti-exploit scripts love to check everything about the client when it joins
+ 
+-- Clear workspace
+for i, object in pairs(workspace:GetChildren()) do
+    if object.Name ~= "Terrain" then
+        if not object:IsA("Camera") and not Players:GetPlayerFromCharacter(object) and object.Name ~= "Terrain" then
+            object:Destroy()
+        end
+    end
+end
+workspace.Terrain:Clear()
+
+-- Clear Lighting
+for i, object in pairs(game.Lighting:GetChildren()) do
+    object:Destroy()
+end
+
+newCharacter(LocalPlayer.Character)
+LocalPlayer.CharacterAdded:Connect(newCharacter)
+
