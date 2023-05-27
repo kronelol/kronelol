@@ -1,3 +1,57 @@
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+
+local Players = game:GetService("Players")
+local virtualUser = game:GetService("VirtualUser")
+local networkClient = game:GetService("NetworkClient")
+
+real = 2
+
+LocalPlayer = Players.LocalPlayer
+Character = LocalPlayer.Character
+
+-- Functions
+local function newCharacter(Character)
+    local rootPart = Character:WaitForChild("HumanoidRootPart")
+    
+    -- Clear PlayerGuis
+    for i, object in pairs(LocalPlayer.PlayerGui:GetChildren()) do
+        object:Destroy()
+    end
+end
+ 
+-- Use less of internet resources
+--networkClient:SetOutgoingKBPSLimit(1)
+ 
+repeat wait() until LocalPlayer.Character ~= nil and game:IsLoaded()
+wait(5) -- Waiting 5 more seconds because some anti-exploit scripts love to check everything about the client when it joins
+ 
+-- Clear workspace
+for i, object in pairs(workspace:GetChildren()) do
+    if object.Name ~= "Terrain" then
+        if not object:IsA("Camera") and not Players:GetPlayerFromCharacter(object) and object.Name ~= "Terrain" then
+            object:Destroy()
+        end
+    end
+end
+workspace.Terrain:Clear()
+
+-- Clear Lighting
+for i, object in pairs(game.Lighting:GetChildren()) do
+    object:Destroy()
+end
+
+newCharacter(LocalPlayer.Character)
+LocalPlayer.CharacterAdded:Connect(newCharacter)
+
+
+
+getgenv().rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+    if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
+        game:GetService("TeleportService"):Teleport(game.PlaceId)
+    end
+end)
+
 local botchats = {
   "join /krone | boost 4 whitelists lol we back",
   "/krone for life realism hahaaa",
@@ -5,12 +59,95 @@ local botchats = {
 }
 wait(1) if not game:IsLoaded() then game.Loaded:Wait() end
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
 local rservice = game:GetService("RunService")
+
+function Message(MTitle,MText,Time)
+game:GetService("StarterGui"):SetCore("SendNotification",{Title = MTitle,Text = MText,Icon = "rbxassetid://2541869220",Duration = Time})
+end
 
 coroutine.resume(coroutine.create(function() while wait(1) do pcall(function() for _,z in next, Players:GetPlayers() do if z ~= LocalPlayer then for _,v in next, z.Backpack:GetDescendants() do if v:IsA'Sound' then v.TimePosition = nil end end end end end) end end)) 
 coroutine.resume(coroutine.create(function() while wait(1) do pcall(function() for _,z in next, Players:GetPlayers() do if z ~= LocalPlayer then if z.Character and z.Character:FindFirstChildOfClass("Tool") then for _,v in next, z.Character:GetDescendants() do if v:IsA'Sound' then v.TimePosition = nil end end end end end end) end end))
+
+if real == 2 then
+Resize = function()
+LocalPlayer.Character.LeftUpperLeg.LeftKneeRigAttachment.OriginaLocalPlayerosition:Destroy()
+LocalPlayer.Character.LeftLowerLeg.LeftKneeRigAttachment.OriginaLocalPlayerosition:Destroy()
+LocalPlayer.Character.LeftUpperLeg.LeftKneeRigAttachment:Destroy()
+LocalPlayer.Character.LeftLowerLeg.LeftKneeRigAttachment:Destroy()
+for _, z in pairs(LocalPlayer.Character.Humanoid:GetDescendants()) do
+if z:IsA "NumberValue" then
+LocalPlayer.Character.LeftFoot.OriginalSize:Destroy()
+LocalPlayer.Character.LeftLowerLeg.OriginalSize:Destroy()
+LocalPlayer.Character.LeftUpperLeg.OriginalSize:Destroy()
+z:Destroy()
+Instance.new("Vector3Value", LocalPlayer.Character.LeftFoot)
+Instance.new('Vector3Value', LocalPlayer.Character.LeftLowerLeg)
+Instance.new("Vector3Value", LocalPlayer.Character.LeftUpperLeg)
+task.wait(.25)
+if _ == 3 then
+break
+end
+end
+end
+end
+
+LocalPlayer.CharacterAdded:Connect(
+function()
+LocalPlayer.Character:WaitForChild("Humanoid")
+task.wait(.25)
+pcall(Resize)
+end
+)
+pcall(Resize)
+end
+
+coroutine.wrap(function()
+while wait() do
+pcall(function()
+if LocalPlayer.Character then
+spawn(function()
+pcall(function()
+LocalPlayer.Character:FindFirstChild("RightHand"):Destroy()
+end)
+pcall(function()
+LocalPlayer.Character:FindFirstChild("RightArm"):Destroy()
+end)
+end)
+if LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Sit == true then
+spawn(function()
+LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+end)
+spawn(function()
+LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Sit = false
+end)
+end
+end
+end)
+end
+end)()
+
+local numb = 0
+
+
+local function ServerHop()
+
+local AvailableServers = HTTPService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceID .. "/servers/Public?sortOrder=Asc&limit=100"))
+
+while wait() do
+local RandomServer = AvailableServers.data[math.random(#AvailableServers.data)]
+if RandomServer.playing < RandomServer.maxPlayers - 1 and RandomServer.playing > 10 and RandomServer.id ~= game.JobId then
+TPService:TeleportToPlaceInstance(game.PlaceId, RandomServer.id)
+end
+end
+end
+
+local function hop()
+ServerHop()
+while task.wait(.1) do
+pcall(ServerHop)
+end
+end
+
 
 local function SkidFling(TargetPlayer)
     local Character = LocalPlayer.Character
@@ -57,7 +194,7 @@ local function SkidFling(TargetPlayer)
             RootPart.RotVelocity = Vector3.new(9e9,9e9,9e9)
         end
         local function SFBasePart(BasePart)
-            local TimeToWait = 1
+            local TimeToWait = 0.5
             local Time = tick()
             local Angle = 0
             
@@ -127,8 +264,9 @@ coroutine.resume(coroutine.create(function()
         pcall(function()
             for _,z in pairs(Players:GetPlayers()) do
                 if z ~= LocalPlayer then
-                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and z and z.Character and z.Character:FindFirstChildOfClass("Humanoid").Sit == false then
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and z and z.Character and z.Character:FindFirstChildOfClass("Humanoid").Sit == false and #game.Players:GetPlayers() < 10 then
                         SkidFling(z)
+                        numb = numb + 1
                         wait(1)
                     end
                 end
@@ -142,49 +280,15 @@ coroutine.resume(coroutine.create(function()
             if z~=LocalPlayer then
                 for i=1,30 do
                 game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(botchats[math.random(1, #botchats)], "All")
-                wait(2.15)
+                wait(1.265)
             end
         end
         end
 end
 end))
-for i = 1, 120 do
-    if #Players:GetPlayers() <= 4 then
-        break
-    end
-    wait(.65)
-end
-local GUIDs = {}
-local maxPlayers = 0
-local Http =
-    game:GetService("HttpService"):JSONDecode(
-    game:HttpGet(
-        "https://games.roblox.com/v1/games/" ..
-            game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100&cursor="
-    )
-)
-for i = 1, 100 do
-    for i, v in next, Http.data do
-        if v.playing ~= v.maxPlayers and v.id ~= game.JobId then
-            maxPlayers = v.maxPlayers
-            table.insert(GUIDs, {id = v.id, users = v.playing})
-        end
-    end
-    if Http.nextPageCursor ~= null then
-        Http =
-            game:GetService("HttpService"):JSONDecode(
-            game:HttpGet(
-                "https://games.roblox.com/v1/games/"
-                ..
-                game.PlaceId
-                ..
-                "/servers/Public?sortOrder=Asc&limit=100&cursor="
-                ..
-                Http.nextPageCursor
-            )
-        )
-    else
-        break
-    end
-end
-repeat wait() game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, GUIDs[math.random(1, 3)].id, LocalPlayer) until not LocalPlayer
+
+--[ Player Checking ]--
+
+
+
+if numb == 700 then hop() end
