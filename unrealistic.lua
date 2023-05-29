@@ -1,11 +1,11 @@
-repeat task.wait() until game:IsLoaded()
+
 
 
 local Players = game:GetService("Players")
 local virtualUser = game:GetService("VirtualUser")
 local networkClient = game:GetService("NetworkClient")
 
-real = 2
+real = 1
 
 LocalPlayer = Players.LocalPlayer
 Character = LocalPlayer.Character
