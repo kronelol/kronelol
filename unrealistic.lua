@@ -1,4 +1,4 @@
-if not game:IsLoaded() then game.Loaded:Wait() end
+repeat task.wait() until game:IsLoaded()
 
 
 local Players = game:GetService("Players")
